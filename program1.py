@@ -1,26 +1,54 @@
-class Solution:
-   
-    def getTotalIsles(self, grid: list[list[str]]) -> int:
-    #    write your code here
-     num_islands = 0
-     visited = [[False for _ in row] for row in grid]  # Initialize visited matrix
+def num_islands(grid):
+    # Get the dimensions of the grid
+    if not grid:
+        return 0
 
-     def dfs(i, j):
-            
-          if 0 <= i < len(grid) and 0 <= j < len(grid[0]) and not visited[i][j] and grid[i][j] == "L":
-              visited[i][j] = True
-              dfs(i + 1, j)  # Explore right neighbor
-              dfs(i - 1, j)  # Explore left neighbor
-              dfs(i, j + 1)  # Explore bottom neighbor
-              dfs(i, j - 1)  # Explore top neighbor
+    rows, cols = len(grid), len(grid[0])
+    visited = [[False] * cols for _ in range(rows)]
 
-     for i in range(len(grid)):
-            for j in range(len(grid[0])):
-                if not visited[i][j] and grid[i][j] == "L":
-                    num_islands += 1
-                    dfs(i, j)  # Found a new island, explore it
+    # Directions to explore: right, down, left, up (horizontal and vertical neighbors)
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
-     return num_islands 
+    # DFS function to explore the island and mark all connected 'L' cells
+    def dfs(r, c):
+        # Stack for the DFS
+        stack = [(r, c)]
+        visited[r][c] = True
+        
+        while stack:
+            x, y = stack.pop()
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < rows and 0 <= ny < cols and not visited[nx][ny] and grid[nx][ny] == 'L':
+                    visited[nx][ny] = True
+                    stack.append((nx, ny))
+
+    island_count = 0
+
+    # Traverse every cell in the grid
+    for r in range(rows):
+        for c in range(cols):
+            # Start a DFS when we find an unvisited 'L'
+            if grid[r][c] == 'L' and not visited[r][c]:
+                dfs(r, c)
+                island_count += 1  # Increment the island count
+
+    return island_count
+
+# Input function
+def input_map():
+    # Take grid input from the user
+    rows = int(input("Enter the number of rows: "))
+    grid = []
+    print("Enter the map (L for land, W for water): ")
+    for _ in range(rows):
+        grid.append(list(input().strip()))
+    return grid
+
+# Main function
+grid = input_map()
+print("Number of distinct islands:", num_islands(grid))
+
 
                     
       
